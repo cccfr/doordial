@@ -1,0 +1,6 @@
+#define     WIFI_SSID "none-ssid"
+#define     WIFI_PASSWORD "purzelbaum"
+#define     MQTT_BROKER "mqtt-ip"
+#define     AUTH_HOST "hostname" //as in html/js
+#define     AUTH_PORT 1234 // port
+#define     FINGERPRINT "12:23:42:00:13:12:00:23:42:00:CA:FF:EE:......:"

@@ -1,0 +1,63 @@
+:root {
+  --color-main-bg: rgba(0,0,0,1);
+  --color-main: rgba(102,255,0,1);
+  --color-field-shadow: rgba(102,255,0,0.5);
+}
+
+@font-face {
+    font-family: 'vt220';
+    src: url('glass_tty_vt220-webfont.woff2') format('woff2'),
+         url('glass_tty_vt220-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    background: var(--color-main-bg);
+    color: var(--color-main);
+    font-family: 'vt220', Arial, Helvetica, sans-serif;
+}
+
+input, button {
+    font-family: 'vt220', Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    background-color: var(--color-main-bg);
+    color: var(--color-main);
+}
+
+input[type=text], button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-main);
+}
+
+input:focus, input:active, button:focus, button:active {
+    box-shadow: 0 0 1.5rem 0.1rem var(--color-field-shadow);
+}
+
+button {
+    cursor: pointer;
+}
+
+ul {
+    margin: 1rem 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+li {
+    line-height: 1.5rem;
+    margin: 1rem 0;
+}
+
+.rfid-choose-field {
+    cursor: pointer;
+}
