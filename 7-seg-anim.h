@@ -68,6 +68,26 @@ void ANIM_BLINK(uint8_t* sevenData, uint8_t state) {
         }
 }
 
+void ANIM_WAIT(uint8_t* sevenData, uint8_t state) {
+  switch(state) {
+        case 0: {
+                    sevenData[0] = SEG_A | SEG_F;
+                    sevenData[1] = 0x00;
+                    sevenData[2] = 0x00;
+                    sevenData[3] = SEG_C | SEG_D;
+                    break;
+                }
+        case 1: {
+                    sevenData[0] = SEG_E | SEG_D;
+                    sevenData[1] = 0x00;
+                    sevenData[2] = 0x00;
+                    sevenData[3] = SEG_A | SEG_B;
+                    break;
+                }
+
+        }
+}
+
 void ANIM_CIRCLE (uint8_t* sevenData, uint8_t state)
 {
     switch(state) {

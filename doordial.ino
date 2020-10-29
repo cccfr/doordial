@@ -19,6 +19,7 @@ PubSubClient mqttClient(wifiClient);
 unsigned long lastUpdate = millis();
 
 // dial
+#define dialTimeout 30000
 #define busyPin 5 // becomes low while dialing a number
 #define countPin 4 // is normaly high, becomes low for each count event
 #define pinLen 4// how long should a pin be
@@ -52,9 +53,11 @@ uint8_t sevenData[] = { 0x00, 0xf0, 0x01, 0xa1 };
 uint8_t ANIM_pos = 0;
 bool HOR_pos = false;
 bool VER_pos = false;
+bool WAIT_pos = false;
 
 // Relay
 #define RelayPin 15
+#define RelayTime 6000
 
 TM1637Display display(sevenCLK, sevenDIO);
 
@@ -118,7 +121,7 @@ void setupOTA() {
   // ArduinoOTA.setPort(8266);
   // Hostname defaults to esp8266-[ChipID]
   ArduinoOTA.setHostname("esp-doordial");
-  ArduinoOTA.setPasswordHash("482d2757995ddf74dcf0bac1f94be186");
+  ArduinoOTA.setPasswordHash("5ed9eb75c6da93b1e705e6c6a2d0ba93");
   ArduinoOTA.onStart([]() {
     String type;
     if (ArduinoOTA.getCommand() == U_FLASH) {
@@ -160,7 +163,7 @@ void initDial()
   //busyButton.attachClick(busyClick);
   pinMode(busyPin, INPUT_PULLUP);
   countButton.attachClick(countClick);
-  //resetButton.attachClick(resetClick);
+  resetButton.attachClick(resetClick);
   //pinMode(resetPin, INPUT_PULLUP);
 }
 
@@ -185,6 +188,7 @@ void countClick()
 
 void resetClick()
 {
+  sevenReady();
   Serial.println("reset clicked");
   resetDigits();
 }
@@ -215,12 +219,12 @@ void loop()
         sevenDashed();
         return;
       }
-      displayChallenge();
       triggerRelay(); // open Hatch
+      displayChallenge();
       unsigned long startTime = millis();
       while ( digitPos < pinLen ) {
         dialLoop();
-        if (millis() - startTime > 30000) {
+        if (millis() - startTime > dialTimeout) {
           Serial.println("challenge timed out");
           return;
         }
@@ -435,14 +439,14 @@ void resetDigits()
     digits[i] = '0';
   }
   digits[pinLen] = '\0';
-  sevenDashed();
+  displayChallenge();
 }
 
 void displayChallenge() {
     for(int i = 0; i < 4; i++)
     {
       sevenData[i] = display.encodeDigit(int(challenge[i]));
-      challenge[i] = SEG_E | SEG_B;
+      //challenge[i] = SEG_E | SEG_B;
     }
     /*
     Serial.print("display challenge: ");
@@ -545,6 +549,16 @@ void sevenReady() {
   delay(300);
 }
 
+void sevenWait() {
+  WAIT_pos = !WAIT_pos;
+  if (WAIT_pos) {
+    ANIM_WAIT(sevenData, 0);
+  } else {
+    ANIM_WAIT(sevenData, 1);
+  }
+  display.setSegments(sevenData);
+}
+
 void updateTopics() {
   Serial.println("update topics");
   mqttClient.publish("door/lastOpening", "not implemented"); // 
@@ -609,6 +623,9 @@ void ShowReaderDetails() {
 
 void triggerRelay() {
   digitalWrite(RelayPin,HIGH);
-  delay(3000);
+  for (int i=0; i<=10; i++) {
+    sevenWait();
+    delay(RelayTime/10); 
+  }
   digitalWrite(RelayPin,LOW);
 }
