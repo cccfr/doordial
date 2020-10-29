@@ -351,6 +351,8 @@ bool getChallenge() {
     statuscode[i] = httpsClient.read();
   }
   statuscode[pinLen] = '\0';
+  Serial.print("statuscode: ");
+  Serial.println(statuscode);
   if (strcmp(statuscode, "OkKc") != 0) {
     Serial.printf("%s error getting the challenge\n", statuscode);
     httpsClient.stop();
@@ -401,6 +403,11 @@ bool sendChallenge() {
     statuscode[i] = httpsClient.read();
   }
   statuscode[pinLen] = '\0';
+  if (strcmp(statuscode, "OkPs") == 0) {
+    Serial.println("Pin Set");
+    httpsClient.stop();
+    return true;
+  }
   if (strcmp(statuscode, "OkAg") == 0) {
     Serial.println("Access Granted");
     httpsClient.stop();
@@ -425,6 +432,7 @@ void addDigit()
   }
   itoa(count, buf, 10);
   digits[digitPos] = buf[0];
+  // clear the respective digit from 7-seg
   sevenData[digitPos] = 0;
   display.setSegments(sevenData);
   digitPos ++;
