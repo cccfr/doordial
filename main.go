@@ -116,7 +116,7 @@ func handleChallengeRequest(w http.ResponseWriter, r *http.Request) {
     }
     log.Printf("request from %s\n", rfid)
     openChallenges[rfid] = generateChallenge(pin)
-    fmt.Fprintf(w, "OkKc", openChallenges[rfid])
+    fmt.Fprintf(w, "OkKc#%s", openChallenges[rfid])
     fmt.Printf("sent challenge %s\n", openChallenges[rfid])
 }
 
@@ -158,6 +158,7 @@ func handleChallengeResponse(w http.ResponseWriter, r *http.Request) {
         card.Pin = pin
         log.Printf("set pin for %s", rfid)
 	cardStore.DumpCards();
+	fmt.Fprintf(w, "OkPs pin Set")
         return
     }
     if pin != card.Pin {
