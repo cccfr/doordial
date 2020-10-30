@@ -77,7 +77,7 @@ func handleDebug(w http.ResponseWriter, r *http.Request) {
 
 func open() {
         log.Println("Opening...")
-	return
+	//return
         cmd := exec.Command("/opt/sesam")
 	result, err := cmd.Output()
         if err != nil {
