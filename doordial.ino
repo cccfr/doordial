@@ -215,6 +215,7 @@ void loop()
   newData = false;
   rfidLoop();
   if ( newData ) {
+      resetDigits();
       if (!getChallenge()) {
         sevenDashed();
         return;
@@ -226,6 +227,7 @@ void loop()
         dialLoop();
         if (millis() - startTime > dialTimeout) {
           Serial.println("challenge timed out");
+          resetDigits();
           return;
         }
         delay(1);
@@ -447,7 +449,8 @@ void resetDigits()
     digits[i] = '0';
   }
   digits[pinLen] = '\0';
-  displayChallenge();
+  sevenDashed();
+  //displayChallenge();
 }
 
 void displayChallenge() {
