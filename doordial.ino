@@ -19,12 +19,13 @@ PubSubClient mqttClient(wifiClient);
 unsigned long lastUpdate = millis();
 
 // dial
-#define dialTimeout 30000
+#define dialTimeout 30000 // abort if no input for this long
 #define busyPin 5 // becomes low while dialing a number
 #define countPin 4 // is normaly high, becomes low for each count event
 #define pinLen 4// how long should a pin be
 #define resetPin 15 // phonehook button
-char buf[100];
+char buf[100]; // buffer to receive new card IDs
+unsigned long startTime = millis(); // startTime for dialTimeout
 
 //OneButton busyButton(busyPin, true);
 OneButton countButton(countPin, false);
@@ -209,8 +210,6 @@ void loop()
   }
   
   mqttClient.loop();
-  
-  //dialLoop();
 
   newData = false;
   rfidLoop();
@@ -222,7 +221,7 @@ void loop()
       }
       triggerRelay(); // open Hatch
       displayChallenge();
-      unsigned long startTime = millis();
+      startTime = millis();
       while ( digitPos < pinLen ) {
         dialLoop();
         if (millis() - startTime > dialTimeout) {
@@ -239,7 +238,7 @@ void loop()
           delay(500);
         }
       } else  {
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 4; i++)
         {
           sevenFailed();
           delay(100);
@@ -439,6 +438,7 @@ void addDigit()
   display.setSegments(sevenData);
   digitPos ++;
   Serial.print(count);
+  startTime = millis();
 }
 
 void resetDigits()
